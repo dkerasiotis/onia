@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ώνια — Λίστα Αγορών</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07090f;
+  --s1: #0e1118;
+  --s2: #141824;
+  --s3: #1c2235;
+  --border: #232a3d;
+  --border-light: #2d3652;
+  --primary: #00b894;
+  --primary2: #00d2a0;
+  --primary-dim: rgba(0,184,148,0.1);
+  --primary-glow: rgba(0,184,148,0.25);
+  --green: #00d084;
+  --green-dim: rgba(0,208,132,0.1);
+  --red: #ff4444;
+  --red-dim: rgba(255,68,68,0.1);
+  --blue: #4d9fff;
+  --blue-dim: rgba(77,159,255,0.1);
+  --yellow: #ffd60a;
+  --yellow-dim: rgba(255,214,10,0.1);
+  --orange: #ff8c38;
+  --orange-dim: rgba(255,140,56,0.1);
+  --text: #dce4f5;
+  --text-muted: #5a6a8a;
+  --text-dim: #2e3a52;
+  --radius: 14px;
+  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+/* ── LAYOUT ── */
+.app{display:flex;height:100vh;overflow:hidden;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:220px;min-width:220px;
+  background:var(--s1);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  overflow-y:auto;
+  transition:transform 0.3s;
+  z-index:100;
+}
+.sidebar-logo{
+  padding:1.5rem 1.25rem 1rem;
+  border-bottom:1px solid var(--border);
+}
+.sidebar-logo .icon{font-size:1.6rem;display:block;margin-bottom:0.3rem;}
+.sidebar-logo h1{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:1.5rem;font-weight:800;
+  letter-spacing:1px;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.sidebar-logo small{font-size:0.7rem;color:var(--text-muted);letter-spacing:0.5px;}
+
+.sidebar-section{
+  padding:1rem 0.75rem 0.25rem;
+  font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;
+  color:var(--text-dim);font-weight:600;
+}
+.nav-item{
+  display:flex;align-items:center;gap:0.65rem;
+  padding:0.65rem 1.25rem;
+  font-size:0.875rem;font-weight:500;
+  color:var(--text-muted);cursor:pointer;
+  border-left:3px solid transparent;
+  transition:all 0.2s;
+  user-select:none;
+}
+.nav-item:hover{color:var(--text);background:var(--s2);}
+.nav-item.active{color:var(--primary);border-left-color:var(--primary);background:var(--primary-dim);}
+.nav-item .nav-icon{font-size:1rem;width:20px;text-align:center;}
+
+.sidebar-bottom{margin-top:auto;padding:1rem;border-top:1px solid var(--border);}
+.user-info{font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem;}
+.user-info strong{color:var(--text);font-weight:500;}
+.btn-logout{
+  width:100%;padding:0.5rem;
+  background:var(--s2);border:1px solid var(--border);border-radius:8px;
+  color:var(--text-muted);font-family:'Outfit',sans-serif;font-size:0.8rem;
+  cursor:pointer;transition:all 0.2s;
+}
+.btn-logout:hover{color:var(--red);border-color:var(--red);}
+
+/* ── MAIN CONTENT ── */
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+.topbar{
+  background:var(--s1);border-bottom:1px solid var(--border);
+  padding:0.85rem 1.75rem;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:1rem;flex-wrap:wrap;
+  position:sticky;top:0;z-index:50;
+}
+.topbar h2{font-size:1.15rem;font-weight:600;}
+.topbar-actions{display:flex;gap:0.5rem;align-items:center;}
+.hamburger{display:none;background:none;border:none;color:var(--text);font-size:1.3rem;cursor:pointer;padding:0.25rem;}
+
+.content{padding:1.5rem 1.75rem;flex:1;}
+.section{display:none;}
+.section.active{display:block;}
+
+/* ── BUTTONS ── */
+.btn{
+  padding:0.55rem 1.1rem;border-radius:8px;font-family:'Outfit',sans-serif;
+  font-size:0.85rem;font-weight:500;cursor:pointer;border:1px solid var(--border);
+  transition:all 0.2s;display:inline-flex;align-items:center;gap:0.4rem;
+}
+.btn-primary{background:var(--primary);color:#fff;border-color:var(--primary);}
+.btn-primary:hover{background:var(--primary2);box-shadow:0 0 15px var(--primary-glow);}
+.btn-secondary{background:var(--s2);color:var(--text);}
+.btn-secondary:hover{background:var(--s3);border-color:var(--border-light);}
+.btn-danger{background:var(--red-dim);color:var(--red);border-color:rgba(255,68,68,0.3);}
+.btn-danger:hover{background:var(--red);color:#fff;}
+.btn-sm{padding:0.35rem 0.75rem;font-size:0.78rem;}
+.btn-blue{background:var(--blue-dim);color:var(--blue);border-color:rgba(77,159,255,0.3);}
+.btn-blue:hover{background:var(--blue);color:#fff;}
+.btn-yellow{background:var(--yellow-dim);color:var(--yellow);border-color:rgba(255,214,10,0.3);}
+.btn-yellow:hover{background:var(--yellow);color:#000;}
+
+/* ── CARDS ── */
+.card{
+  background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1.25rem;margin-bottom:0.75rem;transition:border-color 0.2s;
+}
+.card:hover{border-color:var(--border-light);}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;}
+.card-title{font-size:1rem;font-weight:600;}
+.card-meta{font-size:0.78rem;color:var(--text-muted);}
+.card-actions{display:flex;gap:0.35rem;}
+
+/* ── BADGES ── */
+.badge{
+  display:inline-flex;align-items:center;gap:0.25rem;
+  padding:0.2rem 0.6rem;border-radius:50px;font-size:0.72rem;font-weight:600;
+}
+.badge-open{background:var(--blue-dim);color:var(--blue);}
+.badge-claimed{background:var(--orange-dim);color:var(--orange);}
+.badge-in_progress{background:var(--yellow-dim);color:var(--yellow);}
+.badge-completed{background:var(--green-dim);color:var(--green);}
+.badge-high{background:var(--red-dim);color:var(--red);}
+.badge-normal{background:var(--blue-dim);color:var(--blue);}
+.badge-low{background:rgba(90,106,138,0.15);color:var(--text-muted);}
+
+/* ── TABLES ── */
+table{width:100%;border-collapse:collapse;}
+th{
+  text-align:left;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.5px;
+  color:var(--text-muted);padding:0.65rem 0.75rem;border-bottom:1px solid var(--border);
+  font-weight:600;
+}
+td{
+  padding:0.65rem 0.75rem;border-bottom:1px solid var(--border);font-size:0.88rem;
+  vertical-align:middle;
+}
+tr:hover td{background:var(--s2);}
+
+/* ── FORMS ── */
+.form-group{margin-bottom:1rem;}
+.form-group label{
+  display:block;font-size:0.78rem;font-weight:600;color:var(--text-muted);
+  text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.4rem;
+}
+.form-control{
+  width:100%;background:var(--s2);border:1px solid var(--border);border-radius:8px;
+  padding:0.6rem 0.85rem;color:var(--text);font-family:'Outfit',sans-serif;font-size:0.9rem;
+  outline:none;transition:border-color 0.2s;
+}
+.form-control:focus{border-color:var(--primary);}
+select.form-control{cursor:pointer;}
+.form-row{display:flex;gap:0.75rem;}
+.form-row > *{flex:1;}
+
+/* ── MODAL ── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;
+  align-items:center;justify-content:center;padding:1rem;
+}
+.modal-overlay.open{display:flex;}
+.modal{
+  background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);
+  width:100%;max-width:550px;max-height:85vh;overflow-y:auto;
+  box-shadow:0 20px 60px rgba(0,0,0,0.6);
+}
+.modal-header{
+  padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.modal-header h3{font-size:1.05rem;font-weight:600;}
+.modal-close{background:none;border:none;color:var(--text-muted);font-size:1.2rem;cursor:pointer;}
+.modal-close:hover{color:var(--red);}
+.modal-body{padding:1.5rem;}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:0.5rem;justify-content:flex-end;}
+
+/* ── LIST DETAIL ── */
+.list-detail-header{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;
+  margin-bottom:1.25rem;
+}
+.list-detail-header h3{font-size:1.1rem;font-weight:600;}
+.list-progress{
+  display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;
+}
+.progress-bar{
+  flex:1;height:8px;background:var(--s2);border-radius:4px;overflow:hidden;
+}
+.progress-fill{height:100%;background:var(--primary);border-radius:4px;transition:width 0.3s;}
+.progress-text{font-size:0.82rem;color:var(--text-muted);white-space:nowrap;}
+
+.item-row{
+  display:flex;align-items:center;gap:0.75rem;
+  padding:0.65rem 0.75rem;border-bottom:1px solid var(--border);
+  transition:background 0.15s;
+}
+.item-row:hover{background:var(--s2);}
+.item-row.bought{opacity:0.5;}
+.item-row.bought .item-name{text-decoration:line-through;}
+.item-check{
+  width:22px;height:22px;border:2px solid var(--border-light);border-radius:6px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;flex-shrink:0;
+}
+.item-check:hover{border-color:var(--primary);}
+.item-check.checked{background:var(--primary);border-color:var(--primary);}
+.item-check.checked::after{content:'✓';color:#fff;font-size:0.75rem;font-weight:700;}
+.item-name{flex:1;font-size:0.9rem;}
+.item-qty{font-size:0.82rem;color:var(--text-muted);min-width:60px;text-align:right;}
+.item-buyer{font-size:0.75rem;color:var(--text-muted);min-width:80px;text-align:right;}
+
+.category-group{margin-bottom:1rem;}
+.category-group-header{
+  display:flex;align-items:center;gap:0.5rem;
+  padding:0.5rem 0.75rem;background:var(--s2);border-radius:8px;
+  font-size:0.82rem;font-weight:600;color:var(--text-muted);
+  margin-bottom:0.25rem;
+}
+
+/* ── PRODUCT PICKER ── */
+.picker-category{margin-bottom:0.75rem;}
+.picker-category-header{
+  display:flex;align-items:center;gap:0.4rem;
+  font-size:0.82rem;font-weight:600;color:var(--text-muted);
+  margin-bottom:0.35rem;padding:0.3rem 0;
+}
+.picker-item{
+  display:flex;align-items:center;gap:0.5rem;
+  padding:0.35rem 0.5rem;border-radius:6px;
+  transition:background 0.15s;
+}
+.picker-item:hover{background:var(--s2);}
+.picker-item input[type="checkbox"]{
+  accent-color:var(--primary);width:16px;height:16px;cursor:pointer;
+}
+.picker-item label{flex:1;font-size:0.88rem;cursor:pointer;}
+.picker-item .picker-fields{
+  display:none;align-items:center;gap:0.4rem;
+}
+.picker-item.selected .picker-fields{display:flex;}
+.picker-fields input,.picker-fields select{
+  background:var(--s2);border:1px solid var(--border);border-radius:6px;
+  color:var(--text);font-family:'Outfit',sans-serif;font-size:0.78rem;
+  padding:0.25rem 0.4rem;outline:none;
+}
+.picker-fields input{width:50px;text-align:center;}
+.picker-fields select{padding:0.25rem 0.3rem;}
+
+/* ── EMPTY STATE ── */
+.empty-state{
+  text-align:center;padding:3rem 1rem;color:var(--text-muted);
+}
+.empty-state .empty-icon{font-size:3rem;margin-bottom:0.75rem;display:block;}
+.empty-state p{font-size:0.9rem;}
+
+/* ── TOAST ── */
+.toast-container{position:fixed;bottom:1.5rem;right:1.5rem;z-index:500;display:flex;flex-direction:column;gap:0.5rem;}
+.toast{
+  padding:0.75rem 1.25rem;border-radius:8px;font-size:0.85rem;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);animation:slideIn 0.3s;
+  max-width:350px;
+}
+.toast-success{background:#0a3d2a;border:1px solid rgba(0,208,132,0.3);color:var(--green);}
+.toast-error{background:#3d0a0a;border:1px solid rgba(255,68,68,0.3);color:var(--red);}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .sidebar{position:fixed;top:0;left:0;bottom:0;transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .hamburger{display:block;}
+  .content{padding:1rem;}
+  .form-row{flex-direction:column;}
+  .modal{max-width:100%;margin:0.5rem;}
+  .topbar{padding:0.65rem 1rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="icon">🛒</span>
+      <h1>Ώνια</h1>
+      <small>Λίστα Αγορών Νοικοκυριού</small>
+    </div>
+
+    <div class="sidebar-section">Κύριο Μενού</div>
+    <div class="nav-item active" data-section="lists">
+      <span class="nav-icon">🛒</span> Λίστες Αγορών
+    </div>
+    <div class="nav-item" data-section="catalog">
+      <span class="nav-icon">📦</span> Κατάλογος Προϊόντων
+    </div>
+    <div class="nav-item" data-section="categories">
+      <span class="nav-icon">📂</span> Κατηγορίες
+    </div>
+    <div class="nav-item" data-section="history">
+      <span class="nav-icon">📜</span> Ιστορικό
+    </div>
+
+    <div class="sidebar-section">Σύστημα</div>
+    <div class="nav-item" data-section="settings">
+      <span class="nav-icon">⚙️</span> Ρυθμίσεις
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="user-info">Συνδεδεμένος ως <strong id="user-display"></strong></div>
+      <button class="btn-logout" onclick="doLogout()">Αποσύνδεση</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <button class="hamburger" onclick="toggleSidebar()">☰</button>
+        <h2 id="topbar-title">Λίστες Αγορών</h2>
+      </div>
+      <div class="topbar-actions" id="topbar-actions"></div>
+    </div>
+
+    <div class="content">
+
+      <!-- ═══ LISTS SECTION ═══ -->
+      <div class="section active" id="section-lists">
+        <div id="lists-container"></div>
+      </div>
+
+      <!-- ═══ LIST DETAIL VIEW ═══ -->
+      <div class="section" id="section-list-detail">
+        <div id="list-detail-container"></div>
+      </div>
+
+      <!-- ═══ CATALOG SECTION ═══ -->
+      <div class="section" id="section-catalog">
+        <div id="catalog-container"></div>
+      </div>
+
+      <!-- ═══ CATEGORIES SECTION ═══ -->
+      <div class="section" id="section-categories">
+        <div id="categories-container"></div>
+      </div>
+
+      <!-- ═══ HISTORY SECTION ═══ -->
+      <div class="section" id="section-history">
+        <div id="history-container"></div>
+      </div>
+
+      <!-- ═══ SETTINGS SECTION ═══ -->
+      <div class="section" id="section-settings">
+        <div id="settings-container"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <h3 id="modal-title"></h3>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+// ══════════════════════════════
+// STATE
+// ══════════════════════════════
+let currentUser = null;
+let currentSection = 'lists';
+let currentListId = null;
+let categoriesCache = [];
+let productsCache = [];
+
+// ══════════════════════════════
+// API HELPER
+// ══════════════════════════════
+async function api(path, opts = {}) {
+  const r = await fetch(path, {
+    headers: { 'Content-Type': 'application/json', ...opts.headers },
+    ...opts,
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  });
+  if (r.status === 401) { window.location.href = '/login'; return; }
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || 'Σφάλμα');
+  return data;
+}
+
+// ══════════════════════════════
+// INIT
+// ══════════════════════════════
+async function init() {
+  try {
+    currentUser = await api('/api/me');
+    document.getElementById('user-display').textContent = currentUser.displayName || currentUser.username;
+    setupNav();
+    await refreshCaches();
+    showSection('lists');
+  } catch {
+    window.location.href = '/login';
+  }
+}
+
+async function refreshCaches() {
+  [categoriesCache, productsCache] = await Promise.all([
+    api('/api/categories'),
+    api('/api/products')
+  ]);
+}
+
+// ══════════════════════════════
+// NAVIGATION
+// ══════════════════════════════
+function setupNav() {
+  document.querySelectorAll('.nav-item[data-section]').forEach(el => {
+    el.addEventListener('click', () => {
+      showSection(el.dataset.section);
+      closeSidebar();
+    });
+  });
+}
+
+function showSection(name) {
+  currentSection = name;
+  currentListId = null;
+
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const navEl = document.querySelector(`.nav-item[data-section="${name}"]`);
+  if (navEl) navEl.classList.add('active');
+
+  document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+  const section = document.getElementById(`section-${name}`);
+  if (section) section.classList.add('active');
+
+  const titles = {
+    lists: 'Λίστες Αγορών', catalog: 'Κατάλογος Προϊόντων',
+    categories: 'Κατηγορίες', history: 'Ιστορικό', settings: 'Ρυθμίσεις',
+    'list-detail': 'Λεπτομέρειες Λίστας'
+  };
+  document.getElementById('topbar-title').textContent = titles[name] || '';
+
+  // Load section data
+  const actions = document.getElementById('topbar-actions');
+  actions.innerHTML = '';
+
+  if (name === 'lists') {
+    actions.innerHTML = '<button class="btn btn-primary" onclick="openNewListModal()">+ Νέα Λίστα</button>';
+    loadLists();
+  } else if (name === 'catalog') {
+    actions.innerHTML = '<button class="btn btn-primary" onclick="openProductModal()">+ Νέο Προϊόν</button>';
+    loadCatalog();
+  } else if (name === 'categories') {
+    actions.innerHTML = '<button class="btn btn-primary" onclick="openCategoryModal()">+ Νέα Κατηγορία</button>';
+    loadCategories();
+  } else if (name === 'history') {
+    loadHistory();
+  } else if (name === 'settings') {
+    loadSettings();
+  }
+}
+
+function showListDetail(listId) {
+  currentListId = listId;
+  document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+  document.getElementById('section-list-detail').classList.add('active');
+  document.getElementById('topbar-title').textContent = 'Λεπτομέρειες Λίστας';
+  document.getElementById('topbar-actions').innerHTML =
+    '<button class="btn btn-secondary btn-sm" onclick="showSection(\'lists\')">← Πίσω</button>';
+  loadListDetail(listId);
+}
+
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); }
+
+// ══════════════════════════════
+// TOAST
+// ══════════════════════════════
+function toast(msg, type = 'success') {
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  el.textContent = msg;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// ══════════════════════════════
+// MODAL
+// ══════════════════════════════
+function openModal(title, bodyHtml, footerHtml) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = bodyHtml;
+  document.getElementById('modal-footer').innerHTML = footerHtml;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+// Close modal on overlay click
+document.getElementById('modal-overlay').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+// ══════════════════════════════
+// LOGOUT
+// ══════════════════════════════
+async function doLogout() {
+  await fetch('/api/logout', { method: 'POST' });
+  window.location.href = '/login';
+}
+
+// ══════════════════════════════
+// LISTS
+// ══════════════════════════════
+async function loadLists() {
+  const lists = await api('/api/lists');
+  const container = document.getElementById('lists-container');
+
+  if (!lists.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <span class="empty-icon">🛒</span>
+        <p>Δεν υπάρχουν ενεργές λίστες αγορών.</p>
+        <button class="btn btn-primary" style="margin-top:1rem" onclick="openNewListModal()">+ Δημιουργία Λίστας</button>
+      </div>`;
+    return;
+  }
+
+  const statusLabels = { open: 'Ανοιχτή', claimed: 'Ανατέθηκε', in_progress: 'Σε εξέλιξη', completed: 'Ολοκληρωμένη' };
+
+  container.innerHTML = lists.map(l => `
+    <div class="card" style="cursor:pointer" onclick="showListDetail(${l.id})">
+      <div class="card-header">
+        <span class="card-title">${esc(l.title)}</span>
+        <span class="badge badge-${l.status}">${statusLabels[l.status] || l.status}</span>
+      </div>
+      <div class="card-meta">
+        Δημιουργία: ${fmtDate(l.created_at)} από ${esc(l.created_by_name || '—')}
+        ${l.claimed_by_name ? ` · Ανέλαβε: <strong>${esc(l.claimed_by_name)}</strong>` : ''}
+        · Προϊόντα: ${l.bought_items || 0}/${l.total_items || 0}
+      </div>
+      ${l.total_items > 0 ? `
+      <div class="list-progress" style="margin-top:0.5rem;margin-bottom:0">
+        <div class="progress-bar"><div class="progress-fill" style="width:${Math.round(((l.bought_items||0)/(l.total_items||1))*100)}%"></div></div>
+        <span class="progress-text">${Math.round(((l.bought_items||0)/(l.total_items||1))*100)}%</span>
+      </div>` : ''}
+    </div>
+  `).join('');
+}
+
+async function loadListDetail(id) {
+  const list = await api(`/api/lists/${id}`);
+  const container = document.getElementById('list-detail-container');
+  const statusLabels = { open: 'Ανοιχτή', claimed: 'Ανατέθηκε', in_progress: 'Σε εξέλιξη', completed: 'Ολοκληρωμένη' };
+  const bought = list.items.filter(i => i.is_bought).length;
+  const total = list.items.length;
+  const pct = total ? Math.round((bought / total) * 100) : 0;
+
+  // Group items by category
+  const groups = {};
+  for (const item of list.items) {
+    const key = item.category_name || 'Χωρίς κατηγορία';
+    if (!groups[key]) groups[key] = { icon: item.category_icon || '📦', items: [] };
+    groups[key].items.push(item);
+  }
+
+  const priorityLabels = { high: 'Υψηλή', normal: 'Κανονική', low: 'Χαμηλή' };
+  const isOwner = list.created_by === currentUser.id;
+  const isClaimer = list.claimed_by === currentUser.id;
+  const isCompleted = list.status === 'completed';
+
+  let actionsHtml = '<div style="display:flex;gap:0.5rem;flex-wrap:wrap;">';
+  if (!isCompleted) {
+    if (!list.claimed_by) {
+      actionsHtml += `<button class="btn btn-blue btn-sm" onclick="claimList(${id})">🙋 Ανάληψη</button>`;
+    } else if (isClaimer || currentUser.role === 'admin') {
+      actionsHtml += `<button class="btn btn-secondary btn-sm" onclick="unclaimList(${id})">↩ Ακύρωση Ανάληψης</button>`;
+    }
+    actionsHtml += `<button class="btn btn-primary btn-sm" onclick="completeList(${id})">✓ Ολοκλήρωση</button>`;
+    actionsHtml += `<button class="btn btn-secondary btn-sm" onclick="openAddItemModal(${id})">+ Προϊόν</button>`;
+  }
+  if (isCompleted && (isOwner || currentUser.role === 'admin')) {
+    actionsHtml += `<button class="btn btn-yellow btn-sm" onclick="reopenList(${id})">↺ Επαναφορά</button>`;
+  }
+  actionsHtml += `<button class="btn btn-blue btn-sm" onclick="copyList(${id})">📋 Αντιγραφή</button>`;
+  if ((list.status === 'open' || currentUser.role === 'admin') && isOwner) {
+    actionsHtml += `<button class="btn btn-danger btn-sm" onclick="deleteList(${id})">🗑 Διαγραφή</button>`;
+  }
+  actionsHtml += '</div>';
+
+  container.innerHTML = `
+    <div class="list-detail-header">
+      <div>
+        <h3>${esc(list.title)} <span class="badge badge-${list.status}">${statusLabels[list.status]}</span></h3>
+        <div class="card-meta" style="margin-top:0.3rem">
+          Δημιουργία: ${fmtDate(list.created_at)} από ${esc(list.created_by_name)}
+          ${list.claimed_by_name ? ` · Ανέλαβε: <strong>${esc(list.claimed_by_name)}</strong>` : ''}
+          ${list.notes ? ` · ${esc(list.notes)}` : ''}
+        </div>
+      </div>
+    </div>
+    ${actionsHtml}
+    <div class="list-progress" style="margin-top:1rem;">
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <span class="progress-text">${bought}/${total} (${pct}%)</span>
+    </div>
+    ${Object.entries(groups).map(([catName, group]) => `
+      <div class="category-group">
+        <div class="category-group-header">${group.icon} ${esc(catName)}</div>
+        ${group.items.map(item => `
+          <div class="item-row ${item.is_bought ? 'bought' : ''}">
+            <div class="item-check ${item.is_bought ? 'checked' : ''}"
+                 onclick="${isCompleted ? '' : (item.is_bought ? `unbuyItem(${id},${item.id})` : `buyItem(${id},${item.id})`)}"
+                 style="${isCompleted ? 'cursor:default;opacity:0.5' : ''}"></div>
+            <span class="item-name">
+              ${esc(item.product_name)}
+              <span class="badge badge-${item.priority}" style="margin-left:0.3rem">${priorityLabels[item.priority]}</span>
+            </span>
+            <span class="item-qty">${item.quantity} ${esc(item.unit)}</span>
+            <span class="item-buyer">${item.bought_by_name ? esc(item.bought_by_name) : ''}</span>
+            ${!isCompleted ? `<button class="btn btn-danger btn-sm" style="padding:0.2rem 0.4rem;font-size:0.7rem" onclick="removeItem(${id},${item.id})">✕</button>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    `).join('')}
+    ${!total ? '<div class="empty-state"><span class="empty-icon">📭</span><p>Η λίστα είναι κενή</p></div>' : ''}
+  `;
+}
+
+async function claimList(id) {
+  try {
+    await api(`/api/lists/${id}/claim`, { method: 'POST' });
+    toast('Ανέλαβες τη λίστα!');
+    loadListDetail(id);
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function unclaimList(id) {
+  try {
+    await api(`/api/lists/${id}/unclaim`, { method: 'POST' });
+    toast('Η ανάληψη ακυρώθηκε');
+    loadListDetail(id);
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function completeList(id) {
+  if (!confirm('Ολοκλήρωση λίστας;')) return;
+  try {
+    await api(`/api/lists/${id}/complete`, { method: 'POST' });
+    toast('Η λίστα ολοκληρώθηκε!');
+    showSection('lists');
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function reopenList(id) {
+  try {
+    await api(`/api/lists/${id}/reopen`, { method: 'POST' });
+    toast('Η λίστα ξανάνοιξε');
+    loadListDetail(id);
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function copyList(id) {
+  try {
+    const newList = await api(`/api/lists/${id}/copy`, { method: 'POST', body: {} });
+    toast('Η λίστα αντιγράφηκε!');
+    showListDetail(newList.id);
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function deleteList(id) {
+  if (!confirm('Διαγραφή λίστας;')) return;
+  try {
+    await api(`/api/lists/${id}`, { method: 'DELETE' });
+    toast('Η λίστα διαγράφηκε');
+    showSection('lists');
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function buyItem(listId, itemId) {
+  try {
+    await api(`/api/lists/${listId}/items/${itemId}/buy`, { method: 'POST' });
+    loadListDetail(listId);
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function unbuyItem(listId, itemId) {
+  try {
+    await api(`/api/lists/${listId}/items/${itemId}/unbuy`, { method: 'POST' });
+    loadListDetail(listId);
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function removeItem(listId, itemId) {
+  try {
+    await api(`/api/lists/${listId}/items/${itemId}`, { method: 'DELETE' });
+    toast('Το προϊόν αφαιρέθηκε');
+    loadListDetail(listId);
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+// ══════════════════════════════
+// NEW LIST MODAL
+// ══════════════════════════════
+async function openNewListModal() {
+  await refreshCaches();
+
+  // Group products by category
+  const groups = {};
+  for (const p of productsCache) {
+    if (!groups[p.category_id]) groups[p.category_id] = { name: p.category_name, icon: p.category_icon, products: [] };
+    groups[p.category_id].products.push(p);
+  }
+
+  if (!Object.keys(groups).length) {
+    toast('Πρόσθεσε πρώτα κατηγορίες και προϊόντα στον κατάλογο', 'error');
+    return;
+  }
+
+  const today = new Date().toLocaleDateString('el-GR', { day: '2-digit', month: '2-digit' });
+  const bodyHtml = `
+    <div class="form-group">
+      <label>Τίτλος Λίστας</label>
+      <input class="form-control" id="new-list-title" value="Ψώνια ${today}" placeholder="π.χ. Σούπερ Μάρκετ">
+    </div>
+    <div class="form-group">
+      <label>Σημειώσεις</label>
+      <input class="form-control" id="new-list-notes" placeholder="Προαιρετικές σημειώσεις...">
+    </div>
+    <div class="form-group">
+      <label>Επιλογή Προϊόντων</label>
+      ${Object.entries(groups).map(([catId, g]) => `
+        <div class="picker-category">
+          <div class="picker-category-header">${g.icon} ${esc(g.name)}</div>
+          ${g.products.map(p => `
+            <div class="picker-item" id="picker-item-${p.id}">
+              <input type="checkbox" id="pick-${p.id}" onchange="togglePickerItem(${p.id})">
+              <label for="pick-${p.id}">${esc(p.name)}</label>
+              <div class="picker-fields">
+                <input type="number" id="pick-qty-${p.id}" value="${p.default_quantity}" min="0.1" step="0.5">
+                <select id="pick-unit-${p.id}">
+                  ${unitOptions(p.default_unit)}
+                </select>
+                <select id="pick-priority-${p.id}">
+                  <option value="low">Χαμηλή</option>
+                  <option value="normal" selected>Κανονική</option>
+                  <option value="high">Υψηλή</option>
+                </select>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  openModal('Νέα Λίστα Αγορών', bodyHtml,
+    `<button class="btn btn-secondary" onclick="closeModal()">Ακύρωση</button>
+     <button class="btn btn-primary" onclick="submitNewList()">Δημιουργία</button>`
+  );
+}
+
+function togglePickerItem(productId) {
+  const el = document.getElementById(`picker-item-${productId}`);
+  const cb = document.getElementById(`pick-${productId}`);
+  el.classList.toggle('selected', cb.checked);
+}
+
+async function submitNewList() {
+  const title = document.getElementById('new-list-title').value;
+  const notes = document.getElementById('new-list-notes').value;
+  const items = [];
+
+  for (const p of productsCache) {
+    const cb = document.getElementById(`pick-${p.id}`);
+    if (cb && cb.checked) {
+      items.push({
+        product_id: p.id,
+        quantity: parseFloat(document.getElementById(`pick-qty-${p.id}`).value) || 1,
+        unit: document.getElementById(`pick-unit-${p.id}`).value,
+        priority: document.getElementById(`pick-priority-${p.id}`).value
+      });
+    }
+  }
+
+  try {
+    const list = await api('/api/lists', { method: 'POST', body: { title, notes, items } });
+    toast('Η λίστα δημιουργήθηκε!');
+    closeModal();
+    showListDetail(list.id);
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+// Add item to existing list
+async function openAddItemModal(listId) {
+  await refreshCaches();
+  const groups = {};
+  for (const p of productsCache) {
+    if (!groups[p.category_id]) groups[p.category_id] = { name: p.category_name, icon: p.category_icon, products: [] };
+    groups[p.category_id].products.push(p);
+  }
+
+  const bodyHtml = `
+    <div class="form-group">
+      <label>Επιλογή Προϊόντων</label>
+      ${Object.entries(groups).map(([catId, g]) => `
+        <div class="picker-category">
+          <div class="picker-category-header">${g.icon} ${esc(g.name)}</div>
+          ${g.products.map(p => `
+            <div class="picker-item" id="add-picker-item-${p.id}">
+              <input type="checkbox" id="add-pick-${p.id}" onchange="document.getElementById('add-picker-item-${p.id}').classList.toggle('selected',this.checked)">
+              <label for="add-pick-${p.id}">${esc(p.name)}</label>
+              <div class="picker-fields">
+                <input type="number" id="add-pick-qty-${p.id}" value="${p.default_quantity}" min="0.1" step="0.5">
+                <select id="add-pick-unit-${p.id}">
+                  ${unitOptions(p.default_unit)}
+                </select>
+                <select id="add-pick-priority-${p.id}">
+                  <option value="low">Χαμηλή</option>
+                  <option value="normal" selected>Κανονική</option>
+                  <option value="high">Υψηλή</option>
+                </select>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  openModal('Προσθήκη Προϊόντων', bodyHtml,
+    `<button class="btn btn-secondary" onclick="closeModal()">Ακύρωση</button>
+     <button class="btn btn-primary" onclick="submitAddItems(${listId})">Προσθήκη</button>`
+  );
+}
+
+async function submitAddItems(listId) {
+  let added = 0;
+  for (const p of productsCache) {
+    const cb = document.getElementById(`add-pick-${p.id}`);
+    if (cb && cb.checked) {
+      await api(`/api/lists/${listId}/items`, {
+        method: 'POST',
+        body: {
+          product_id: p.id,
+          quantity: parseFloat(document.getElementById(`add-pick-qty-${p.id}`).value) || 1,
+          unit: document.getElementById(`add-pick-unit-${p.id}`).value,
+          priority: document.getElementById(`add-pick-priority-${p.id}`).value
+        }
+      });
+      added++;
+    }
+  }
+  if (added) {
+    toast(`Προστέθηκαν ${added} προϊόντα`);
+    closeModal();
+    loadListDetail(listId);
+  } else {
+    toast('Επίλεξε τουλάχιστον ένα προϊόν', 'error');
+  }
+}
+
+// ══════════════════════════════
+// CATALOG
+// ══════════════════════════════
+async function loadCatalog() {
+  await refreshCaches();
+  const container = document.getElementById('catalog-container');
+
+  if (!productsCache.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <span class="empty-icon">📦</span>
+        <p>Δεν υπάρχουν προϊόντα. Πρόσθεσε πρώτα κατηγορίες.</p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = `
+    <table>
+      <thead><tr><th>Προϊόν</th><th>Κατηγορία</th><th>Μονάδα</th><th>Ποσότητα</th><th></th></tr></thead>
+      <tbody>
+        ${productsCache.map(p => `
+          <tr>
+            <td><strong>${esc(p.name)}</strong></td>
+            <td>${p.category_icon} ${esc(p.category_name)}</td>
+            <td>${esc(p.default_unit)}</td>
+            <td>${p.default_quantity}</td>
+            <td style="text-align:right">
+              <button class="btn btn-secondary btn-sm" onclick="openProductModal(${p.id})">✏️</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteProduct(${p.id})">🗑</button>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function openProductModal(editId) {
+  const product = editId ? productsCache.find(p => p.id === editId) : null;
+  const bodyHtml = `
+    <div class="form-group">
+      <label>Όνομα Προϊόντος</label>
+      <input class="form-control" id="prod-name" value="${product ? esc(product.name) : ''}" placeholder="π.χ. Σπαγγέτι">
+    </div>
+    <div class="form-group">
+      <label>Κατηγορία</label>
+      <select class="form-control" id="prod-category">
+        ${categoriesCache.map(c => `<option value="${c.id}" ${product && product.category_id === c.id ? 'selected' : ''}>${c.icon} ${esc(c.name)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Μονάδα</label>
+        <select class="form-control" id="prod-unit">
+          ${unitOptions(product ? product.default_unit : 'τεμ')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Ποσότητα</label>
+        <input type="number" class="form-control" id="prod-qty" value="${product ? product.default_quantity : 1}" min="0.1" step="0.5">
+      </div>
+    </div>
+  `;
+
+  openModal(product ? 'Επεξεργασία Προϊόντος' : 'Νέο Προϊόν', bodyHtml,
+    `<button class="btn btn-secondary" onclick="closeModal()">Ακύρωση</button>
+     <button class="btn btn-primary" onclick="submitProduct(${editId || 'null'})">${product ? 'Αποθήκευση' : 'Δημιουργία'}</button>`
+  );
+}
+
+async function submitProduct(editId) {
+  const body = {
+    name: document.getElementById('prod-name').value,
+    category_id: parseInt(document.getElementById('prod-category').value),
+    default_unit: document.getElementById('prod-unit').value,
+    default_quantity: parseFloat(document.getElementById('prod-qty').value) || 1
+  };
+  try {
+    if (editId) {
+      await api(`/api/products/${editId}`, { method: 'PUT', body });
+      toast('Το προϊόν ενημερώθηκε');
+    } else {
+      await api('/api/products', { method: 'POST', body });
+      toast('Το προϊόν δημιουργήθηκε');
+    }
+    closeModal();
+    loadCatalog();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function deleteProduct(id) {
+  if (!confirm('Διαγραφή προϊόντος;')) return;
+  try {
+    await api(`/api/products/${id}`, { method: 'DELETE' });
+    toast('Το προϊόν διαγράφηκε');
+    loadCatalog();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+// ══════════════════════════════
+// CATEGORIES
+// ══════════════════════════════
+async function loadCategories() {
+  await refreshCaches();
+  const container = document.getElementById('categories-container');
+
+  if (!categoriesCache.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <span class="empty-icon">📂</span>
+        <p>Δεν υπάρχουν κατηγορίες. Δημιούργησε την πρώτη!</p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = `
+    <table>
+      <thead><tr><th></th><th>Κατηγορία</th><th>Προϊόντα</th><th>Σειρά</th><th></th></tr></thead>
+      <tbody>
+        ${categoriesCache.map(c => `
+          <tr>
+            <td style="font-size:1.3rem;width:40px;text-align:center">${c.icon}</td>
+            <td><strong>${esc(c.name)}</strong></td>
+            <td>${c.product_count || 0}</td>
+            <td>${c.sort_order}</td>
+            <td style="text-align:right">
+              <button class="btn btn-secondary btn-sm" onclick="openCategoryModal(${c.id})">✏️</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteCategory(${c.id})">🗑</button>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function openCategoryModal(editId) {
+  const cat = editId ? categoriesCache.find(c => c.id === editId) : null;
+  const commonIcons = ['📦','🍝','🥛','🥩','🥬','🍞','🧴','🧹','🥤','🍪','🧀','🐟','🍎','🥚','🧊','🍺'];
+  const bodyHtml = `
+    <div class="form-group">
+      <label>Όνομα Κατηγορίας</label>
+      <input class="form-control" id="cat-name" value="${cat ? esc(cat.name) : ''}" placeholder="π.χ. Ζυμαρικά">
+    </div>
+    <div class="form-group">
+      <label>Εικονίδιο</label>
+      <div style="display:flex;gap:0.3rem;flex-wrap:wrap;margin-bottom:0.5rem;">
+        ${commonIcons.map(icon => `
+          <span style="font-size:1.5rem;cursor:pointer;padding:0.2rem;border-radius:6px;border:2px solid ${cat && cat.icon === icon ? 'var(--primary)' : 'transparent'}"
+                onclick="document.getElementById('cat-icon').value=this.textContent;document.querySelectorAll('.icon-pick').forEach(e=>e.style.borderColor='transparent');this.style.borderColor='var(--primary)'"
+                class="icon-pick">${icon}</span>
+        `).join('')}
+      </div>
+      <input class="form-control" id="cat-icon" value="${cat ? cat.icon : '📦'}" placeholder="Emoji εικονίδιο">
+    </div>
+    <div class="form-group">
+      <label>Σειρά Εμφάνισης</label>
+      <input type="number" class="form-control" id="cat-order" value="${cat ? cat.sort_order : 0}" min="0">
+    </div>
+  `;
+
+  openModal(cat ? 'Επεξεργασία Κατηγορίας' : 'Νέα Κατηγορία', bodyHtml,
+    `<button class="btn btn-secondary" onclick="closeModal()">Ακύρωση</button>
+     <button class="btn btn-primary" onclick="submitCategory(${editId || 'null'})">${cat ? 'Αποθήκευση' : 'Δημιουργία'}</button>`
+  );
+}
+
+async function submitCategory(editId) {
+  const body = {
+    name: document.getElementById('cat-name').value,
+    icon: document.getElementById('cat-icon').value || '📦',
+    sort_order: parseInt(document.getElementById('cat-order').value) || 0
+  };
+  try {
+    if (editId) {
+      await api(`/api/categories/${editId}`, { method: 'PUT', body });
+      toast('Η κατηγορία ενημερώθηκε');
+    } else {
+      await api('/api/categories', { method: 'POST', body });
+      toast('Η κατηγορία δημιουργήθηκε');
+    }
+    closeModal();
+    loadCategories();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function deleteCategory(id) {
+  if (!confirm('Διαγραφή κατηγορίας;')) return;
+  try {
+    await api(`/api/categories/${id}`, { method: 'DELETE' });
+    toast('Η κατηγορία διαγράφηκε');
+    loadCategories();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+// ══════════════════════════════
+// HISTORY
+// ══════════════════════════════
+async function loadHistory() {
+  const lists = await api('/api/lists?status=completed');
+  const container = document.getElementById('history-container');
+
+  if (!lists.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <span class="empty-icon">📜</span>
+        <p>Δεν υπάρχει ιστορικό ολοκληρωμένων λιστών.</p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = lists.map(l => `
+    <div class="card" style="cursor:pointer" onclick="showListDetail(${l.id})">
+      <div class="card-header">
+        <span class="card-title">${esc(l.title)}</span>
+        <span class="badge badge-completed">Ολοκληρωμένη</span>
+      </div>
+      <div class="card-meta">
+        Δημιουργία: ${fmtDate(l.created_at)}
+        ${l.completed_at ? ` · Ολοκλήρωση: ${fmtDate(l.completed_at)}` : ''}
+        · Προϊόντα: ${l.bought_items || 0}/${l.total_items || 0}
+        ${l.claimed_by_name ? ` · Αγόρασε: ${esc(l.claimed_by_name)}` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════
+// SETTINGS
+// ══════════════════════════════
+function loadSettings() {
+  const container = document.getElementById('settings-container');
+  let html = `
+    <div class="card">
+      <div class="card-header"><span class="card-title">Αλλαγή Κωδικού</span></div>
+      <div style="margin-top:0.75rem">
+        <div class="form-group">
+          <label>Τρέχων Κωδικός</label>
+          <input type="password" class="form-control" id="set-cur-pass">
+        </div>
+        <div class="form-group">
+          <label>Νέος Κωδικός</label>
+          <input type="password" class="form-control" id="set-new-pass">
+        </div>
+        <button class="btn btn-primary" onclick="changePassword()">Αλλαγή</button>
+      </div>
+    </div>
+  `;
+
+  if (currentUser.role === 'admin') {
+    html += `
+      <div class="card" style="margin-top:1rem">
+        <div class="card-header">
+          <span class="card-title">Διαχείριση Χρηστών</span>
+          <button class="btn btn-primary btn-sm" onclick="openUserModal()">+ Νέος Χρήστης</button>
+        </div>
+        <div id="users-list" style="margin-top:0.75rem">Φόρτωση...</div>
+      </div>
+    `;
+  }
+
+  container.innerHTML = html;
+  if (currentUser.role === 'admin') loadUsers();
+}
+
+async function loadUsers() {
+  const users = await api('/api/users');
+  const el = document.getElementById('users-list');
+  el.innerHTML = `
+    <table>
+      <thead><tr><th>Χρήστης</th><th>Εμφανιζόμενο Όνομα</th><th>Ρόλος</th><th></th></tr></thead>
+      <tbody>
+        ${users.map(u => `
+          <tr>
+            <td>${esc(u.username)}</td>
+            <td>${esc(u.display_name)}</td>
+            <td><span class="badge ${u.role === 'admin' ? 'badge-high' : 'badge-normal'}">${u.role}</span></td>
+            <td style="text-align:right">
+              ${u.id !== currentUser.id ? `
+                <button class="btn btn-secondary btn-sm" onclick="resetUserPassword('${u.id}')">🔑</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}')">🗑</button>
+              ` : ''}
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+async function changePassword() {
+  const cur = document.getElementById('set-cur-pass').value;
+  const newP = document.getElementById('set-new-pass').value;
+  try {
+    await api('/api/change-password', { method: 'POST', body: { currentPassword: cur, newPassword: newP } });
+    toast('Ο κωδικός άλλαξε');
+    document.getElementById('set-cur-pass').value = '';
+    document.getElementById('set-new-pass').value = '';
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+function openUserModal() {
+  const bodyHtml = `
+    <div class="form-group">
+      <label>Username</label>
+      <input class="form-control" id="new-user-name" placeholder="username">
+    </div>
+    <div class="form-group">
+      <label>Εμφανιζόμενο Όνομα</label>
+      <input class="form-control" id="new-user-display" placeholder="π.χ. Δημήτρης">
+    </div>
+    <div class="form-group">
+      <label>Κωδικός</label>
+      <input type="password" class="form-control" id="new-user-pass">
+    </div>
+    <div class="form-group">
+      <label>Ρόλος</label>
+      <select class="form-control" id="new-user-role">
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+  `;
+  openModal('Νέος Χρήστης', bodyHtml,
+    `<button class="btn btn-secondary" onclick="closeModal()">Ακύρωση</button>
+     <button class="btn btn-primary" onclick="submitNewUser()">Δημιουργία</button>`
+  );
+}
+
+async function submitNewUser() {
+  try {
+    await api('/api/users', {
+      method: 'POST',
+      body: {
+        username: document.getElementById('new-user-name').value,
+        displayName: document.getElementById('new-user-display').value,
+        password: document.getElementById('new-user-pass').value,
+        role: document.getElementById('new-user-role').value
+      }
+    });
+    toast('Ο χρήστης δημιουργήθηκε');
+    closeModal();
+    loadUsers();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function resetUserPassword(userId) {
+  const newPass = prompt('Νέος κωδικός:');
+  if (!newPass) return;
+  try {
+    await api(`/api/users/${userId}/reset-password`, { method: 'POST', body: { newPassword: newPass } });
+    toast('Ο κωδικός επαναφέρθηκε');
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function deleteUser(userId) {
+  if (!confirm('Διαγραφή χρήστη;')) return;
+  try {
+    await api(`/api/users/${userId}`, { method: 'DELETE' });
+    toast('Ο χρήστης διαγράφηκε');
+    loadUsers();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+// ══════════════════════════════
+// HELPERS
+// ══════════════════════════════
+function esc(s) {
+  if (!s) return '';
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d + 'Z').toLocaleDateString('el-GR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+const UNITS = [
+  { value: 'τεμ', label: 'Τεμάχια' },
+  { value: 'κιλά', label: 'Κιλά' },
+  { value: 'γρ', label: 'Γραμμάρια' },
+  { value: 'λίτρα', label: 'Λίτρα' },
+  { value: 'ml', label: 'Χιλιοστόλιτρα' },
+  { value: 'πακέτο', label: 'Πακέτο' },
+  { value: 'μπουκ', label: 'Μπουκάλι' },
+  { value: 'κουτί', label: 'Κουτί' }
+];
+
+function unitOptions(selected) {
+  return UNITS.map(u => `<option value="${u.value}" ${u.value === selected ? 'selected' : ''}>${u.label}</option>`).join('');
+}
+
+// ── BOOT ──
+init();
+</script>
+</body>
+</html>

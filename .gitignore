@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Data
+*.db
+data/
+
+# Expo
+mobile/.expo/
+mobile/dist/
+mobile/android/
+mobile/ios/
+
+# Environment
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

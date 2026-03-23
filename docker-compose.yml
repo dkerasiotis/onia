@@ -1,0 +1,24 @@
+services:
+  onia:
+    build: .
+    container_name: onia
+    restart: unless-stopped
+    ports:
+      - "5003:5003"
+    volumes:
+      - onia_data:/data
+    environment:
+      - PORT=5003
+      - DB_PATH=/data/onia.db
+      - SESSION_SECRET=${SESSION_SECRET:-onia-session-secret-change-me}
+      - JWT_SECRET=${JWT_SECRET:-onia-jwt-secret-change-me}
+      - ADMIN_INITIAL_PASS=${ADMIN_INITIAL_PASS:-admin}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:5003/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  onia_data:
+    driver: local

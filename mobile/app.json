@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "Ώνια",
+    "slug": "onia",
+    "version": "1.0.0",
+    "sdkVersion": "54.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#07090f"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.onia.shoppinglist",
+      "adaptiveIcon": {
+        "backgroundColor": "#07090f",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#00b894"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "683deea8-76b9-4eb4-9f0d-6a90fa10e19c"
+      }
+    }
+  }
+}
