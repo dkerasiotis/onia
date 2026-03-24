@@ -75,7 +75,20 @@ eas build --platform android --profile preview
 
 Για το APK build χρειάζεται δωρεάν [Expo account](https://expo.dev/signup).
 
-**Ρύθμιση server URL:** Στο `mobile/src/api/client.js` άλλαξε το `API_URL` στη διεύθυνση του server σου.
+#### Ρύθμιση Mobile App
+
+Πριν κάνεις build, πρέπει να ρυθμίσεις τα παρακάτω:
+
+1. **Server URL** — Στο `mobile/src/api/client.js` άλλαξε το `API_URL` στη διεύθυνση του server σου
+2. **Expo Project ID** — Δημιούργησε project στο [expo.dev](https://expo.dev), αντέγραψε το project ID και βάλ' το σε:
+   - `mobile/app.json` → `extra.eas.projectId`
+   - `mobile/src/utils/notifications.js` → `projectId`
+3. **Firebase (για push notifications)**:
+   - Δημιούργησε project στο [Firebase Console](https://console.firebase.google.com/)
+   - Πρόσθεσε Android app με package name `com.onia.shoppinglist`
+   - Κατέβασε το `google-services.json` και βάλ' το στο `mobile/`
+   - Δημιούργησε Service Account key (Project Settings → Service accounts → Generate new private key)
+   - Ανέβασέ το στο Expo: `npx eas credentials` → Android → Push Notifications (FCM V1)
 
 #### Reverse Proxy (HTTPS)
 
@@ -163,6 +176,21 @@ docker compose up -d --build
 ```
 
 Open `http://localhost:5003` — login with `admin` / `admin`
+
+### Mobile App Setup
+
+Before building the APK, configure the following:
+
+1. **Server URL** — In `mobile/src/api/client.js`, change `API_URL` to your server's address
+2. **Expo Project ID** — Create a project at [expo.dev](https://expo.dev), copy the project ID and set it in:
+   - `mobile/app.json` → `extra.eas.projectId`
+   - `mobile/src/utils/notifications.js` → `projectId`
+3. **Firebase (for push notifications)**:
+   - Create a project at [Firebase Console](https://console.firebase.google.com/)
+   - Add an Android app with package name `com.onia.shoppinglist`
+   - Download `google-services.json` and place it in `mobile/`
+   - Generate a Service Account key (Project Settings → Service accounts → Generate new private key)
+   - Upload it to Expo: `npx eas credentials` → Android → Push Notifications (FCM V1)
 
 ### Project Structure
 

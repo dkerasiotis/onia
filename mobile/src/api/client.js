@@ -1,6 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 
-const API_URL = 'https://onia.dkerasiotis.gr';
+// Change this to your server's URL
+const API_URL = 'https://your-server.example.com';
 
 export function getApiUrl() {
   return API_URL;
