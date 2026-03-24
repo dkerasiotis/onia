@@ -624,7 +624,7 @@ async function loadListDetail(id) {
     actionsHtml += `<button class="btn btn-yellow btn-sm" onclick="reopenList(${id})">↺ Επαναφορά</button>`;
   }
   actionsHtml += `<button class="btn btn-blue btn-sm" onclick="copyList(${id})">📋 Αντιγραφή</button>`;
-  if ((list.status === 'open' || currentUser.role === 'admin') && isOwner) {
+  if (list.status === 'open' && isOwner || currentUser.role === 'admin') {
     actionsHtml += `<button class="btn btn-danger btn-sm" onclick="deleteList(${id})">🗑 Διαγραφή</button>`;
   }
   actionsHtml += '</div>';
