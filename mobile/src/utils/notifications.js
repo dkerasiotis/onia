@@ -44,8 +44,10 @@ export async function registerForPushNotifications() {
     }
 
     const tokenData = await Notifications.getExpoPushTokenAsync({
-      projectId: undefined,
+      projectId: '683deea8-76b9-4eb4-9f0d-6a90fa10e19c',
     });
+
+    console.log('[Push] Got token:', tokenData.data);
 
     // Register token with backend
     await apiFetch('/api/register-push-token', {
@@ -53,9 +55,9 @@ export async function registerForPushNotifications() {
       body: { token: tokenData.data },
     });
 
+    console.log('[Push] Token registered with backend');
     return tokenData.data;
   } catch (e) {
-    // Expo Go doesn't support push notifications since SDK 53
     console.log('Push notifications not available:', e.message);
     return null;
   }
