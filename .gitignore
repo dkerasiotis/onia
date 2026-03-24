@@ -14,9 +14,8 @@ mobile/ios/
 # Environment
 .env
 
-# Firebase
+# Firebase Admin SDK key (secret - never commit)
 *-firebase-adminsdk-*.json
-google-services.json
 
 # OS
 .DS_Store

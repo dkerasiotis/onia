@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "722344219961",
+    "project_id": "onia-7c453",
+    "storage_bucket": "onia-7c453.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:722344219961:android:1dac452bb27ff118dfc4e8",
+        "android_client_info": {
+          "package_name": "com.onia.shoppinglist"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALoLQVp_rBT4fGXczJ3Jc5wntvb_xn6lE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
