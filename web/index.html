@@ -246,12 +246,20 @@ select.form-control{cursor:pointer;}
 }
 
 /* ── PRODUCT PICKER ── */
-.picker-category{margin-bottom:0.75rem;}
+.picker-category{margin-bottom:0.5rem;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
 .picker-category-header{
   display:flex;align-items:center;gap:0.4rem;
-  font-size:0.82rem;font-weight:600;color:var(--text-muted);
-  margin-bottom:0.35rem;padding:0.3rem 0;
+  font-size:0.85rem;font-weight:600;color:var(--text);
+  padding:0.6rem 0.75rem;background:var(--s2);cursor:pointer;
+  user-select:none;transition:background 0.15s;
 }
+.picker-category-header:hover{background:var(--s1);}
+.picker-category-header .chevron{
+  margin-left:auto;transition:transform 0.2s;font-size:0.7rem;color:var(--text-muted);
+}
+.picker-category.open .chevron{transform:rotate(90deg);}
+.picker-category-body{display:none;padding:0.25rem 0.5rem 0.5rem;}
+.picker-category.open .picker-category-body{display:block;}
 .picker-item{
   display:flex;align-items:center;gap:0.5rem;
   padding:0.35rem 0.5rem;border-radius:6px;
@@ -771,8 +779,12 @@ async function openNewListModal() {
     <div class="form-group">
       <label>Επιλογή Προϊόντων</label>
       ${Object.entries(groups).map(([catId, g]) => `
-        <div class="picker-category">
-          <div class="picker-category-header">${g.icon} ${esc(g.name)}</div>
+        <div class="picker-category" id="picker-cat-${catId}">
+          <div class="picker-category-header" onclick="document.getElementById('picker-cat-${catId}').classList.toggle('open')">
+            ${g.icon} ${esc(g.name)} <span class="picker-cat-count" id="picker-cat-count-${catId}"></span>
+            <span class="chevron">▶</span>
+          </div>
+          <div class="picker-category-body">
           ${g.products.map(p => `
             <div class="picker-item" id="picker-item-${p.id}">
               <input type="checkbox" id="pick-${p.id}" onchange="togglePickerItem(${p.id})">
@@ -790,6 +802,7 @@ async function openNewListModal() {
               </div>
             </div>
           `).join('')}
+          </div>
         </div>
       `).join('')}
     </div>
@@ -845,8 +858,12 @@ async function openAddItemModal(listId) {
     <div class="form-group">
       <label>Επιλογή Προϊόντων</label>
       ${Object.entries(groups).map(([catId, g]) => `
-        <div class="picker-category">
-          <div class="picker-category-header">${g.icon} ${esc(g.name)}</div>
+        <div class="picker-category" id="add-picker-cat-${catId}">
+          <div class="picker-category-header" onclick="document.getElementById('add-picker-cat-${catId}').classList.toggle('open')">
+            ${g.icon} ${esc(g.name)}
+            <span class="chevron">▶</span>
+          </div>
+          <div class="picker-category-body">
           ${g.products.map(p => `
             <div class="picker-item" id="add-picker-item-${p.id}">
               <input type="checkbox" id="add-pick-${p.id}" onchange="document.getElementById('add-picker-item-${p.id}').classList.toggle('selected',this.checked)">
@@ -864,6 +881,7 @@ async function openAddItemModal(listId) {
               </div>
             </div>
           `).join('')}
+          </div>
         </div>
       `).join('')}
     </div>
