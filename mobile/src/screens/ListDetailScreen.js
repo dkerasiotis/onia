@@ -4,6 +4,7 @@ import {
   Alert, RefreshControl,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { apiFetch } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { colors, statusLabels, statusColors } from '../utils/theme';
@@ -13,6 +14,7 @@ import StatusBadge from '../components/StatusBadge';
 export default function ListDetailScreen({ route, navigation }) {
   const { listId } = route.params;
   const { user } = useAuth();
+  const insets = useSafeAreaInsets();
   const [list, setList] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -192,6 +194,7 @@ export default function ListDetailScreen({ route, navigation }) {
           />
         }
         stickySectionHeadersEnabled={false}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
       />
     </View>
   );
